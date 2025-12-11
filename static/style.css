@@ -1,0 +1,26 @@
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 20px; 
+}
+.task-list { 
+    list-style: none; 
+    padding: 0; 
+}
+.task-item { 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    margin-bottom: 10px; 
+    border-radius: 5px; 
+}
+.completed { 
+    background-color: #e6ffe6; 
+    text-decoration: line-through; 
+}
+.pending { 
+    background-color: #fff2e6; 
+}
+.category { 
+    font-weight: bold; 
+    color: #555; 
+    font-size: 0.9em; 
+}

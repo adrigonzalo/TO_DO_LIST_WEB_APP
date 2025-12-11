@@ -1,2 +1,53 @@
 <!-- In this HTML file we are going to code the template to display all the task list -->
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TASKS LIST - MULTIUSER</title>
+
+    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
+</head>
+<body>
+    <h1>MY PENDING TASKS</h1>
+    
+    <!-- ADD TASKS FORM -->
+    <div class="add-form">
+        <h2>NEW TASK</h2>
+        <form method="POST" action="{{ url_for('add_task') }}">
+            <label for="title">Title:</label><br>
+            <input type="text" name="title" id="title" required><br><br>
+
+            <label for="description">Description:</label><br>
+            <textarea id="description"  name="description"></textarea><br><br>
+
+            <button type="submit">Add Task</button>
+        </form>
+    </div>
+
+    <h2>LIST TASKS</h2> 
+    <ul class = "task-list">
+        {# The Jinja2 syntax {% for ...%} allow iterating over the to-do list which came from Python #}
+        {% for task in tasks %}
+        <li class="task-item {% if task.is_completed %}completed{% else %}pending{% endif %}">
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+
+            <p class="category">
+                Category: {{ task.category_name if task.category_name else 'Without Category' }}
+                Status: {{ task.status_name }}
+            
+            </p>
+            {# Show the ID and the date for debugging #}
+            <small>Creada: {{ task.created_at }} (ID: {{task.id }})</small>
+        </li>
+        {% else %}
+        {# if the list is empty, this block is executed #}
+        <li>There aren't tasks yet. ¡Add one!</li>
+        {% endfor %}
+    </ul>
+
+
+</body>
+</html>

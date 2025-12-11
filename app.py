@@ -64,7 +64,7 @@ def index():
                 FROM tasks t
                 LEFT JOIN categories c ON c.id = t.category_id
                 LEFT JOIN task_status s ON s.id = t.status_id
-                ORDERY BY t.created_at DESC;
+                ORDER BY t.created_at DESC;
             """ 
 
             # 3. Execute the query
@@ -88,6 +88,59 @@ def index():
 
     # 5. Render the HTML template, giving the tasks list
     return render_template('index.html', tasks=tasks)
+
+@app.route('/add_task', methods=['POST'])
+
+# Handle the form submission to create a new task.
+def add_task():
+
+    # 1. Get the data from the form
+    title = request.form['title']
+    description = request.form.get('description', '')  # Use .get to prevent failure if it isn't sended.
+
+    # 2. Connect to the database using the get_db_connection()
+    conn = get_db_connection()
+
+    if conn:
+        try:
+
+            cursor = conn.cursor()
+
+            # 3. Define the INSERT query with the '%s' placeholders for the SQL security
+            query = """
+                INSERT INTO tasks (user_id, status_id, category_id, title, description)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            # Data which will be used in the SQL query. We have defined the data separated of the SQL query variable because the Python 'mysql-connector-python' requires it to prevent the SQL Injection
+            data_to_insert = (1, 1, None, title, description)
+
+            # 4. Execute query
+            cursor.execute(query, data_to_insert)
+
+            # 5. Transaction Confirmation: Saves changes in the DB
+            conn.commit()
+
+        except mysql.connector.Error as err:
+
+            print(f'Error inserting task: {err}')
+            conn.rollback() # If fails, undo any partial change
+
+        finally:
+
+            # 6. Free up Resources
+            if 'cursor' in locals() and cursor:
+
+                cursor.close()
+
+            if conn:
+                
+                conn.close()
+
+    # 7. User redirection to the main web with the updated list
+    return redirect(url_for('index'))
+
+
+
 
 
 # Execute the app
