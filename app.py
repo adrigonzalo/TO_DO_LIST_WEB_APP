@@ -60,7 +60,7 @@ def index():
 
             # 2. Define the SQL query with all the tasks.
             query = """
-                SELECT t.title, t.description, t.is_completed, t.created_at, c.name AS category_name, s.status_name
+                SELECT t.id, t.title, t.description, t.is_completed, t.created_at, c.name AS category_name, s.status_name
                 FROM tasks t
                 LEFT JOIN categories c ON c.id = t.category_id
                 LEFT JOIN task_status s ON s.id = t.status_id
@@ -139,9 +139,94 @@ def add_task():
     # 7. User redirection to the main web with the updated list
     return redirect(url_for('index'))
 
+@app.route('/complete/<int:task_id>', methods=['POST'])
+
+# Function to complete and update the tasks list after a task is completed.
+def complete_task(task_id):
+
+    # 1. Database connection
+    conn = get_db_connection()
+
+    if conn:
+        try:
+
+            # 2. Get the cursor
+            cursor = conn.cursor()
+
+            # 3. Define the query
+            query = """
+                UPDATE tasks SET is_completed = 1 WHERE id = %s
+            """
+
+            # 4. Execute the query
+            cursor.execute(query, (task_id,))
+
+            # 5. Transaction Confirmation
+            conn.commit()
 
 
+        except mysql.connector.Error as err:
+            print(f"Error updating the task:{err}")
+            conn.rollback()
 
+        finally:
+
+            # 6. Free up Resources
+            if 'cursor' in locals() and cursor:
+
+                cursor.close()
+
+            if conn:
+                
+                conn.close()            
+
+    # 7. User redirection to the main web with the updated list
+    return redirect(url_for('index'))
+
+
+@app.route('/delete_task/<int:task_id>', methods=['POST'])
+
+# Function to delete a specific task by ID permanently.
+def delete_task(task_id):
+
+    # 1. Database connection
+    conn = get_db_connection()
+
+    if conn:
+        try:
+
+            # 2. Get the cursor
+            cursor = conn.cursor()
+
+            # 3. Define the query
+            query = """
+                DELETE FROM tasks WHERE id = %s
+            """
+
+            # 4. Execute the query
+            cursor.execute(query, (task_id,))
+
+            # 5. Transaction Confirmation
+            conn.commit()
+
+
+        except mysql.connector.Error as err:
+            print(f"Error deletin the task:{err}")
+            conn.rollback()
+
+        finally:
+
+            # 6. Free up Resources
+            if 'cursor' in locals() and cursor:
+
+                cursor.close()
+
+            if conn:
+                
+                conn.close()            
+
+    # 7. User redirection to the main web with the updated list
+    return redirect(url_for('index'))
 
 # Execute the app
 if __name__ == '__main__':

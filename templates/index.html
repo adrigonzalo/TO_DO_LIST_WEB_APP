@@ -39,6 +39,18 @@
                 Status: {{ task.status_name }}
             
             </p>
+            {# Update logic if the task is completed #}
+            {% if not task.is_completed %}
+            <form class="complete-task" method="POST" action="{{ url_for('complete_task', task_id=task.id)}}">
+                <button type="submit" class="complete-btn">Completed Task</button>
+            </form>
+            
+            {% endif %}
+
+            <form class="delete-task" method="POST" action="{{ url_for('delete_task', task_id=task.id)}}">
+                <button type="submit" class="delete-btn">Delete Task</button>
+            </form>
+
             {# Show the ID and the date for debugging #}
             <small>Creada: {{ task.created_at }} (ID: {{task.id }})</small>
         </li>
